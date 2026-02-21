@@ -1,0 +1,166 @@
+{
+  "type": "scalar.function",
+  "input_schema": {
+    "type": "object",
+    "description": "A photograph of a cat to evaluate for compositional balance — the purposefulness and visual harmony of the cat's placement within the frame.",
+    "properties": {
+      "photograph": {
+        "type": "image",
+        "description": "The photograph of a cat to evaluate. The image can be any photograph in which a cat is the subject — from professional portraits to casual snapshots, tightly cropped or wide-angle. The function examines where the cat is positioned within the rectangle of the image and whether that placement produces compositional balance."
+      }
+    },
+    "required": [
+      "photograph"
+    ]
+  },
+  "tasks": [
+    {
+      "type": "vector.completion",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Look at this photograph of a cat. Does the cat's position within the frame feel deliberately chosen, or does it feel accidental?"
+            },
+            {
+              "$jmespath": "input.photograph"
+            }
+          ]
+        }
+      ],
+      "responses": [
+        [
+          {
+            "type": "text",
+            "text": "The cat's position feels very deliberately chosen. Its placement within the frame communicates clear compositional purpose — this feels like exactly where the cat was meant to be, as though the photographer or the moment itself decided on this precise spot."
+          }
+        ],
+        [
+          {
+            "type": "text",
+            "text": "The cat's position feels somewhat considered. There is a hint of intentionality, but the placement doesn't fully commit to a strong compositional choice — it's neither clearly purposeful nor obviously careless."
+          }
+        ],
+        [
+          {
+            "type": "text",
+            "text": "The cat's position feels accidental. It appears to have ended up here by chance — the placement suggests no compositional forethought, as though the camera was simply pointed in the cat's general direction without regard for where the cat sat within the frame."
+          }
+        ]
+      ],
+      "output": {
+        "$starlark": "output['scores'][0] * 1.0 + output['scores'][1] * 0.5 + output['scores'][2] * 0.0"
+      }
+    },
+    {
+      "type": "vector.completion",
+      "messages": [
+        {
+          "role": "system",
+          "content": [
+            {
+              "type": "text",
+              "text": "You are a photography composition critic who specializes in evaluating how subjects interact with the negative space around them within a frame."
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "$jmespath": "input.photograph"
+            },
+            {
+              "type": "text",
+              "text": "Examine the relationship between the cat and the surrounding space in this photograph. How well do the cat and the negative space work together?"
+            }
+          ]
+        }
+      ],
+      "responses": [
+        [
+          {
+            "type": "text",
+            "text": "The cat and the surrounding space are in beautiful visual dialogue. The negative space feels purposeful — it gives the cat room to breathe, provides atmosphere, and balances against the cat's visual weight. Subject and space are working together in harmony."
+          }
+        ],
+        [
+          {
+            "type": "text",
+            "text": "The cat and the surrounding space coexist adequately but passively. The space neither strongly enhances nor undermines the cat's presence — the relationship between subject and surroundings feels neutral rather than actively connected."
+          }
+        ],
+        [
+          {
+            "type": "text",
+            "text": "The cat and the surrounding space are disconnected. The cat feels either suffocated by cramped, purposeless surroundings or lost adrift in aimless empty space. There is no meaningful visual conversation between the subject and the space around it."
+          }
+        ]
+      ],
+      "output": {
+        "$starlark": "output['scores'][0] * 1.0 + output['scores'][1] * 0.5 + output['scores'][2] * 0.0"
+      }
+    },
+    {
+      "type": "vector.completion",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "I took this photograph of my cat and I'm trying to decide if the composition is working. Here it is:"
+            },
+            {
+              "$jmespath": "input.photograph"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "I can see the photograph. What would you like to know about the composition?"
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Does the photograph feel complete as it is — like the frame was built around the cat in this position — or does it feel like the composition still needs work?"
+            }
+          ]
+        }
+      ],
+      "responses": [
+        [
+          {
+            "type": "text",
+            "text": "It feels complete. The composition has a sense of resolution and inevitability — the frame feels as though it was built around the cat in this exact position. Shifting the cat or adjusting the crop would diminish something essential. Nothing is missing and nothing is extraneous."
+          }
+        ],
+        [
+          {
+            "type": "text",
+            "text": "It feels partially resolved. There are elements of the composition that work, but the overall arrangement still feels like it's searching for a more satisfying equilibrium. The photograph hints at completeness without fully achieving it."
+          }
+        ],
+        [
+          {
+            "type": "text",
+            "text": "It feels incomplete. The cat's position and the frame have not found their agreement — the composition feels unsettled, as though a different placement or a different crop would yield something stronger. The photograph invites re-composition rather than resolution."
+          }
+        ]
+      ],
+      "output": {
+        "$starlark": "output['scores'][0] * 1.0 + output['scores'][1] * 0.5 + output['scores'][2] * 0.0"
+      }
+    }
+  ],
+  "description": "Scores how well a cat is placed within a photograph's frame by evaluating intentionality of placement, spatial dialogue between subject and negative space, and compositional wholeness. Returns a scalar from 0 to 1 — high when placement feels purposeful and the frame feels built around the cat, low when it feels accidental."
+}
